@@ -191,20 +191,6 @@ namespace TaskManager_ns
                     >> end_hour >> end_min >> end_day >> end_month >> end_year >> task_name >> task_text)
         {
             std::cout << "In delete().while\n";
-            // Вариант без id у класса Task
-            // if(start_hour != task.period.start_hour()
-            //         || start_min != task.period.start_min()
-            //         || start_day != task.period.start_date().day()
-            //         || start_month != unsigned(task.period.start_date().month())
-            //         || start_year != task.period.start_date().year()
-            //         || end_hour != task.period.end_hour()
-            //         || end_min != task.period.end_min()
-            //         || start_day != task.period.end_date().day()
-            //         || start_month != unsigned(task.period.end_date().month())
-            //         || start_year != task.period.end_date().year()
-            //         || task_name != task.name
-            //         || task_text != task.text
-            //         )
 
             if(task.get_id() == id)
             {
