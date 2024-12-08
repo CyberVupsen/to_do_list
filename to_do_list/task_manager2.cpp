@@ -73,7 +73,6 @@ namespace TaskManager_ns
 
         download_tasks();
 
-        
     }
    
     //std::istringstream iss;
@@ -147,8 +146,8 @@ namespace TaskManager_ns
     }
 
     void TaskManager::delete_task(Task task) // пожалуй, лучше ввести id у задач
-    {
-        using namespace Chrono_ns;
+    {                                        // МОЖНО ПОЛУЧАТЬ ИЗ ФАЙЛА СТРОКИ, А НЕ ПО ЭЛЕМЕНТАМ ВСЁ. 
+        using namespace Chrono_ns;           // СООТВЕТСТВЕННО И ПЕРЕЗАПИСЫВАТЬ СТРОКАМИ     !!!!!!
 
         std::ofstream buf_out("buf.txt");
         std::cout << "delete_task()\n";
@@ -160,11 +159,11 @@ namespace TaskManager_ns
         in.clear();
         in.seekg(0, std::ios_base::beg);
 
-        std::string line;
-        if(std::getline(in, line))
-        {
-            std::cout << line << std::endl;
-        }
+        // std::string line;
+        // if(std::getline(in, line))
+        // {
+        //     std::cout << line << std::endl;
+        // }
 
         if(!in.is_open())
             throw std::runtime_error("File with tasks isn't open");
@@ -185,12 +184,27 @@ namespace TaskManager_ns
         std::string task_name;
         std::string task_text;
         
-       
+       int j = 0;
         
         while(in >> id >> start_hour >> start_min >> start_day >> start_month >> start_year
                     >> end_hour >> end_min >> end_day >> end_month >> end_year >> task_name >> task_text)
         {
-            std::cout << "In delete().while\n";
+            ++j;
+            std::cout << "In delete().while " << j << "\n";
+            // Вариант без id у класса Task
+            // if(start_hour != task.period.start_hour()
+            //         || start_min != task.period.start_min()
+            //         || start_day != task.period.start_date().day()
+            //         || start_month != unsigned(task.period.start_date().month())
+            //         || start_year != task.period.start_date().year()
+            //         || end_hour != task.period.end_hour()
+            //         || end_min != task.period.end_min()
+            //         || start_day != task.period.end_date().day()
+            //         || start_month != unsigned(task.period.end_date().month())
+            //         || start_year != task.period.end_date().year()
+            //         || task_name != task.name
+            //         || task_text != task.text
+            //         )
 
             if(task.get_id() == id)
             {
@@ -200,7 +214,7 @@ namespace TaskManager_ns
                 
 
             if(!buf_out)
-                throw std::runtime_error("Out failed");
+                throw std::runtime_error("Buf_out failed");
 
             buf_out << id << ' ' << start_hour << ' ' << start_min << ' '
                 << start_day << ' ' << start_month << ' '
@@ -219,23 +233,107 @@ namespace TaskManager_ns
         if(!task_in_list)
             throw std::runtime_error("There is't the task in list");
 
-        if(in.eof())
-            return;
+        if(in.eof()) // перезаписи файла с задачами поместил в цикл, чтобы не испортить исходный файл в случае, если там некорректные файлы
+        {
+            std::ifstream buf_in("buf.txt");
+            out.open("tasks.txt");
+
+            while(buf_in >> id >> start_hour >> start_min >> start_day >> start_month >> start_year
+                        >> end_hour >> end_min >> end_day >> end_month >> end_year >> task_name >> task_text)
+            {
+                if(!buf_out)
+                    throw std::runtime_error("Buf_out failed");
+
+                out << id << ' ' << start_hour << ' ' << start_min << ' '
+                    << start_day << ' ' << start_month << ' '
+                    << start_year << ' '  << end_hour << ' ' 
+                    << end_min << ' ' << end_day << ' '
+                    << end_month << ' ' << end_year << ' '
+                    << task_name << ' ' << task_text << std::endl;
+
+            }
+            if(buf_in.eof())
+                return;
+            if(buf_in.fail())
+                throw std::runtime_error("Uncorrect data in buffer file");
+            buf_in.close();
+
+            if(!out)
+                throw std::runtime_error("Buf_out failed on last line");
+            out.close();
+        }
+ 
         if(in.fail())
             throw std::runtime_error("Uncorrect data in file");
-
         in.close();
+
+        if(!buf_out)
+            throw std::runtime_error("Buf_out failed on last line");
         buf_out.close();
 
-        int exit = rename("buf.txt", "tasks.txt");
-        if(!exit)
-            throw std::runtime_error("File with tasks not updated");
-    }
 
+        int status = remove("buf.txt");
+
+        // Check if the file has been successfully removed
+        if (status)
+            throw std::runtime_error("Buf_out isn't remove");
+            
+
+        // int exit = rename("buf.txt", "tasks.txt");
+        // if(exit)
+        //     throw std::runtime_error("File with tasks not updated");
+    }
+/*
+    void TaskManager::delete_task(Task task) // пожалуй, лучше ввести id у задач
+    {
+        // using namespace Chrono_ns;
+
+        // std::ofstream buf_out("buf.txt");
+        // std::cout << "delete_task()\n";
+
+        // if(!buf_out)
+        //     throw std::runtime_error("Can't open buffer file");
+
+        // in.open("tasks.txt");
+        // in.clear();
+        // in.seekg(0, std::ios_base::beg);
+
+        // // std::string line;
+        // // if(std::getline(in, line))
+        // // {
+        // //     std::cout << line << std::endl;
+        // // }
+
+        // if(!in.is_open())
+        //     throw std::runtime_error("File with tasks isn't open");
+
+        std::ostringstream text;
+        in.open("Text.txt");
+
+        string str = text.str();
+        string str_search = "Fortunato";
+        string str_replace = "NotFortunato";
+        size_t pos = str.find(str_search);
+        str.replace(pos, string(str_search).length(), str_replace);
+    }
+*/
     std::vector<Task> TaskManager::get_tasks() const
     {
         std::cout << "get_tasks()\n";
         std::cout << "vector size: " << tasks.size() << std::endl;
         return tasks;
+    }
+
+    std::vector<Task> TaskManager::get_tasks(Chrono_ns::Date date) const
+    {
+        std::vector<Task> day_tasks;
+        for(Task task : tasks)
+        {
+            if(date.in_period(task.period))
+            {
+                day_tasks.push_back(task);
+            }
+        }
+        return day_tasks;
     }
 }
