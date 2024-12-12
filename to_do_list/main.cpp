@@ -220,36 +220,50 @@ try
     // std::cout << monday_date() << std::endl;
 
 // TASK_MANAGER_2
-    int status = remove("tasks.txt");
+    //int status = remove("tasks.txt");
     TaskManager tm{};
     Period p1{15,30,Date(3,Month::apr,2024), 17,20,Date(3,Month::may,2024)};
-    Task task1{"Task1", "Text1", p1};
+    Task task1{"Task 1", "Matvey pozhal 60", p1};
     tm.add_task(task1);
     Period p2{9,30,Date(7,Month::sep,2022), 17,19,Date(3,Month::feb,2024)};
-    Task task2{"Task2", "Text2", p2};
+    Task task2{"Task2 how amazing", "Velosiped zimoy eto kruto", p2};
     tm.add_task(task2);
     Period p3{7,50,Date(8,Month::aug,2022), 9,47,Date(8,Month::aug,2022)};
     Task task3{"Task3", "Text3", p3};
     tm.add_task(task3);
     Period p4{8,20,Date(6,Month::aug,2022), 12,16,Date(8,Month::aug,2022)};
-    Task task4{"Task4", "Text4", p4};
+    Task task4{"Task 4", "Text4", p4};
     tm.add_task(task4);
     Period p5{23,00,Date(7,Month::aug,2022), 23,47,Date(9,Month::aug,2022)};
     Task task5{"Task5", "Text5", p5};
     tm.add_task(task5);
     std::vector<Task> tasks_list = tm.get_tasks();
+    // tm.delete_task();
+    // tm.delete_task(tasks_list[0]);
+    //tm.delete_task(tasks_list[7]);
+
+
+    Period p6{9,10,Date(3,Month::apr,2024), 22,13,Date(3,Month::may,2024)};
+    //tm.delete_task(tm.get_tasks()[6]);
+    // tm.add_task(Task("Task1v2","Updated task1", p6)); // будет ПРОБЛЕМА, ЕСЛИ в тексте задачи или имени ЕСТЬ ПРОБЕЛ
+    //tm.delete_task(task4);
+    // tm.update_task(tm.get_tasks()[1], Task("CCc v2 go","Updated6 task1", p6));
+    // tm.update_task(tm.get_tasks()[8], Task("Ddd v2 go","Updated7 task1", p6));
 
     std::cout << "all tasks\n";
-    for(Task t : tasks_list)
-        std::cout << t << std::endl;
-
-    std::cout << "day tasks\n";
-    std::vector<Task> day_tasks = tm.get_tasks(Date(2,Month::oct,2023));
-    std::cout << day_tasks.size() << std::endl;
-    for(Task t : day_tasks)
+    for(Task t : tm.get_tasks())
     {
+        //std::cout << t.name << std::endl;
         std::cout << t << std::endl;
     }
+
+    // std::cout << "day tasks\n";
+    // std::vector<Task> day_tasks = tm.get_tasks(Date(2,Month::oct,2023));
+    // std::cout << day_tasks.size() << std::endl;
+    // for(Task t : day_tasks)
+    // {
+    //     std::cout << t << std::endl;
+    // }
 
 
     //tm.delete_task(task1);
@@ -257,14 +271,13 @@ try
     //std::cout << tasks_list[12].get_id() << std::endl;
     //std::vector<Task> tasks_to_del = std::vector<Task> (tasks_list.begin(), tasks_list.end()-5);
 
-    //
-    // for(int i = 0; i < (tasks_list.size() - 5); ++i)
+    // for(int i = 0; i < (tasks_list.size()-3); ++i)
     // {
     //     std::cout << tasks_list[i].get_id() << std::endl;
     //     tm.delete_task(tasks_list[i]);
+    //     //tm.delete_task(i);
     // }
-    // 
-
+    
     // std::cout << "id: " << task1.get_id() << std::endl;
     // tm.delete_task(task1);
 
@@ -273,6 +286,58 @@ try
     // for(Task t : tasks_list)
     //     std::cout << t << std::endl;
 
+
+    // std::ofstream out("tasks.txt", std::ios::app);
+    // std::ifstream in("tasks.txt");
+    // std::string line;
+    // std::string search = "replace";
+    // std::string replace = "success";
+    // while(std::getline(in,line)){
+    //     if(line == search){
+    //         std::cout << "1\n";
+    //         out << replace;
+    //     }
+    //     else {
+    //         out << line;
+    //     }
+    // }
+
+//2
+
+    // size_t len = search.length();
+    // while (getline(in, line))
+    // {
+    //     while (true)
+    //     {
+    //         size_t pos = line.find(search);
+    //         //std::cout << pos << std::endl;
+    //         if (pos != std::string::npos)
+    //             line.replace(pos, len, replace);
+    //         else 
+    //             break;
+    //     }
+
+    //     out << line << '\n';
+    // }
+
+
+    // while (getline(in, line))
+    // {
+    //     line.replace(2, 1, "Hih");
+
+
+    //     out << line << '\n';
+    // }
+
+// Date prefix increment
+    // Date d1 {3, Month::jul, 2024};
+    // std::cout << d1 << std::endl;
+    // for(int j = 0; j < 370; ++j)
+    //     std::cout << ++d1 << std::endl;
+
+    // std::vector dates = get_week_dates();
+    // for(Date d : dates)
+    //     std::cout << d << std::endl;
 
     return 0;
 }

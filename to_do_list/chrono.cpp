@@ -22,27 +22,37 @@ namespace Chrono_ns
     }
 
 
-    Date::Date(double dd, Month mm, double yy)
-        : d{unsigned(dd)}, m{mm}, y{int(yy)}
+    Date::Date(unsigned dd, Month mm, unsigned yy)
+        : d{unsigned(dd)}, m{mm}, y{unsigned(yy)}
     {
         if(!is_date(dd, mm, yy))
-            throw std::runtime_error("Uncorrect date"/* + dd + '.' + int(mm) + '.' + yy*/); 
+            throw std::runtime_error("Uncorrect date: " + std::to_string(dd) + '.' + std::to_string(int(mm)) + '.' + std::to_string(yy)); 
     }
 
-    bool leapyear(unsigned y) //ПЕРЕПИСАТЬ
+    bool leapyear(unsigned y)
     {
+        if(y % 4 == 0)
+        {
+            if(y % 100 == 0)
+            {
+                if(y % 400 != 0)
+                    return false;
+                return true;
+            }
+            return true;
+        }
         return false;
     }
 
-    bool is_date(double d, Month m, double y)
+    bool is_date(unsigned d, Month m, unsigned y)
     {
-        if(d <= 0 || (d - int(d)) != 0 || (y - int(y)) != 0)
+        if(d <= 0 || y > 60000)
             return false;
 
         if(m < Month::jan || Month::dec < m)
             return false;
 
-        int days_in_month = 31;
+        unsigned days_in_month = 31;
 
         switch(m)
         {
@@ -55,6 +65,8 @@ namespace Chrono_ns
         case Month::nov:
             days_in_month = 30;
             break;
+        default:
+            break;
         }
         if(d > days_in_month)
             return false;
@@ -63,6 +75,24 @@ namespace Chrono_ns
     }
 
     bool Date::in_period(Period p) { return (p.start_date() <= *this && p.end_date() >= *this); }
+
+    Date operator ++ (Date& d)
+    {
+        unsigned day = d.day();
+        Month month = d.month();
+        unsigned year = d.year();
+        unsigned days_in_month = Chrono_ns::days_in_month(month, year);
+        ++day;
+        if(day > days_in_month)
+        {
+            day = 1;
+            ++month;
+            if(month == Month::jan)
+                ++year;
+        }
+        d = Date(day, month, year);
+        return d;
+    }
 
     bool operator == (const Date& d1, const Date& d2)
     {
@@ -125,8 +155,8 @@ namespace Chrono_ns
 
     bool is_period(unsigned start_hour, unsigned start_min, Date start_date, unsigned end_hour, unsigned end_min, Date end_date)
     {
-        if((end_hour == start_hour && end_min <= start_min || end_hour < start_hour) && end_date == start_date
-                                                                                     || end_date < start_date)
+        if(((end_hour == start_hour) && (end_min <= start_min)) || ((end_hour < start_hour) && (end_date == start_date
+                                                                                     || end_date < start_date)))
             return false;
         return true;
     }
@@ -158,11 +188,8 @@ namespace Chrono_ns
     }
 
 
-    unsigned days_in_month(Month month, float year)
+    unsigned days_in_month(Month month, unsigned year)
     {
-        if(year - int(year) != 0)
-            throw std::runtime_error("Year must have integer type");
-
         unsigned days_in_month = 31;
 
         switch(month)
@@ -176,10 +203,11 @@ namespace Chrono_ns
         case Month::nov:
             days_in_month = 30;
             break;
+        default:
+            break;
         }
         return days_in_month;
     }
-
 
     Date today()
     {
@@ -202,12 +230,24 @@ namespace Chrono_ns
         if(monday_day < 1)
         {
             --monday_month;
-            int to_minus_from_prev_month = -monday_day;
+            int difference = -monday_day;
             unsigned days_in_prev_month = Chrono_ns::days_in_month(monday_month, today.year());
-            monday_day = days_in_prev_month - to_minus_from_prev_month;
+            monday_day = days_in_prev_month - difference;
             if(monday_month == Month::dec)
                 --monday_year;
         }
         return Date(monday_day, monday_month, monday_year);
+    }
+
+    std::vector<Date> get_week_dates()
+    {
+        Date now_date = Chrono_ns::monday_date();
+        std::vector<Date> dates;
+        for(int j {0}; j < 7; ++j)
+        {
+            dates.push_back(now_date);
+            ++now_date;
+        }
+        return dates;
     }
 }
